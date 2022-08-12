@@ -47,11 +47,11 @@ def generate_text(tokenized_text):
         content.append(token)
     
     text = detokenize(content)
-    for something in text:
-        if (something == '.'):
-            print (something)
+    for text_char in text:
+        if (text_char == '.'):
+            print (text_char)
         else:
-            print (something, end = '')
+            print (text_char, end = '')
 
 # Program begins here
 def main(argv):
