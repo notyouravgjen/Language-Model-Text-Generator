@@ -9,6 +9,9 @@ import nltk
 import re
 import random
 from nltk.lm import MLE
+from nltk.lm import Laplace
+from nltk.lm import Vocabulary
+from nltk.lm.preprocessing import padded_everygrams
 from nltk.lm.preprocessing import padded_everygram_pipeline
 from nltk.tokenize.treebank import TreebankWordDetokenizer
 
@@ -52,14 +55,44 @@ def generate_text(tokenized_text):
             print (text_char)
         else:
             print (text_char, end = '')
+            
+def create_vocab_and_training_data(ngram_order, words, tokens2d):
+    return (
+        Vocabulary(words, unk_cutoff=1),
+        [
+            padded_everygrams(ngram_order, sent)
+            for sent in (tokens2d)
+        ],
+    )
+            
+def la_place_generate(tokenized_text, tokens2d):
+    vocab, training_text = create_vocab_and_training_data(2, tokenized_text, tokens2d)
+    model = Laplace(2, vocabulary=vocab)
+    model.fit(training_text)
+    
+    detokenize = TreebankWordDetokenizer().detokenize
+    content = []
+    for token in model.generate(3000):
+        if token == '<UNK>':
+            continue
+        content.append(token)
+    
+    text = detokenize(content)
+    for text_char in text:
+        if (text_char == '.'):
+            print (text_char)
+        else:
+            print (text_char, end = '')
 
 # Program begins here
-def main(argv):
-    nltk.download('punkt')
+def main(argv):    
+    brown = nltk.corpus.brown
+    b_tokens = brown.words()
+    b_train = b_tokens[:1000]
     
-    #brown = nltk.corpus.brown
-    #b_tokens = brown.words()
-   # b_train = b_tokens[:100]
+    reuters = nltk.corpus.reuters
+    r_tokens = reuters.words()
+    r_train = r_tokens[:1000]
     
     #Open training data    
     f1 = open('data/ep1.trn', 'r')
@@ -83,9 +116,25 @@ def main(argv):
     tokens5 = tokenize_lower([text5])
     tokens6 = tokenize_lower([text6])
     
-    tokens = [tokens1, tokens2, tokens3, tokens4, tokens5, tokens6]
+    # 2d list of all tokens
+    tokens_2d = [tokens1, tokens2, tokens3, tokens4, tokens5, tokens6]
     
-    generate_text(tokens)
+    # 1d list ofall tokens
+    tokens = []
+    tokens.extend(tokens1)
+    tokens.extend(tokens2)
+    tokens.extend(tokens3)
+    tokens.extend(tokens4)
+    tokens.extend(tokens5)
+    tokens.extend(tokens6)
+    
+    # Use MLE
+    #generate_text(tokens_2d)
+    
+    # Use LaPlace
+    tokens.extend(b_train)
+    tokens.extend(r_train)
+    la_place_generate(tokens, tokens_2d)
     
 if __name__ == "__main__":
     main(sys.argv[1:])
