@@ -119,7 +119,7 @@ def main(argv):
     # 2d list of all tokens
     tokens_2d = [tokens1, tokens2, tokens3, tokens4, tokens5, tokens6]
     
-    # 1d list ofall tokens
+    # 1d list of all tokens
     tokens = []
     tokens.extend(tokens1)
     tokens.extend(tokens2)
