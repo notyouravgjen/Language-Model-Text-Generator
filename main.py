@@ -82,6 +82,10 @@ def la_place_generate(tokenized_text, tokens2d, word_count):
     capitalize_next = False
     
     for text_char in text:
+        if (text_char == ' ' and capitalize_next):
+            # Space was replaced with line break
+            continue
+            
         if (text_char == '.'):
             print (text_char)
             capitalize_next = True
@@ -114,12 +118,13 @@ def main(argv):
     total_word_count = 0
     
     for file_name in files:
-        file = open('data/'+file_name, 'r')
-        text = file.read()
-        tokens = tokenize_lower([text])
-        tokens_1d.extend(tokens)
-        tokens_2d.append(tokens)
-        total_word_count += len(tokens)
+        if file_name != '.DS_Store':
+            file = open('data/'+file_name, 'r')
+            text = file.read()
+            tokens = tokenize_lower([text])
+            tokens_1d.extend(tokens)
+            tokens_2d.append(tokens)
+            total_word_count += len(tokens)
  
     avg_word_count = int(total_word_count / len(files))
  
