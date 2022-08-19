@@ -52,10 +52,10 @@ def mle_generate(tokenized_text, word_count):
     
     text = detokenize(content)
     for text_char in text:
-        if (text_char == '.'):
-            print (text_char)
+        if text_char == '.':
+            print(text_char)
         else:
-            print (text_char, end = '')
+            print(text_char, end = '')
             
 def create_vocab_and_training_data(ngram_order, words, tokens2d):
     return (
@@ -84,19 +84,19 @@ def la_place_generate(tokenized_text, tokens2d, word_count):
     stop_words = ['.', '?', '!']
     
     for text_char in text:
-        if (text_char == ' ' and capitalize_next):
+        if text_char == ' ' and capitalize_next:
             # Space was replaced with line break
             continue
             
-        if (text_char in stop_words):
-            print (text_char)
+        if text_char in stop_words:
+            print(text_char)
             capitalize_next = True
         else:
-            if (capitalize_next):
-                print (text_char.upper(), end = '')
+            if capitalize_next:
+                print(text_char.upper(), end = '')
                 capitalize_next = False
             else:
-                print (text_char, end = '')
+                print(text_char, end = '')
 
 # Program begins here
 def main(argv):    
