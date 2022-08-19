@@ -33,8 +33,8 @@ def tokenize_lower(string_list):
                     wordlist.append(token.lower())
     return tokenlist
     
-# use a language model to generate text
-def generate_text(tokenized_text, word_count):
+# use MLE language model to generate text
+def mle_generate_text(tokenized_text, word_count):
     n = 3
     train_data, padded_sents = padded_everygram_pipeline(n, tokenized_text)
     model = MLE(n)
@@ -117,7 +117,7 @@ def main(argv):
     avg_word_count = int(total_word_count / len(files))
  
     # Use MLE
-    #generate_text(tokens_2d, avg_word_count)
+    #mle_generate_text(tokens_2d, avg_word_count)
     
     # Use LaPlace
     tokens.extend(b_train)
