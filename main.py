@@ -79,11 +79,18 @@ def la_place_generate(tokenized_text, tokens2d, word_count):
         content.append(token)
     
     text = detokenize(content)
+    capitalize_next = False
+    
     for text_char in text:
         if (text_char == '.'):
             print (text_char)
+            capitalize_next = True
         else:
-            print (text_char, end = '')
+            if (capitalize_next):
+                print (text_char.upper(), end = '')
+                capitalize_next = False
+            else:
+                print (text_char, end = '')
 
 # Program begins here
 def main(argv):    
@@ -95,7 +102,7 @@ def main(argv):
     r_tokens = reuters.words()
     r_train = r_tokens[:1000]
     
-    #Open training data
+    # Open training data
     files = os.listdir('data')
     
     # 1d list of all tokens
