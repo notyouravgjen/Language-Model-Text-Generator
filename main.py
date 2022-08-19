@@ -81,12 +81,14 @@ def la_place_generate(tokenized_text, tokens2d, word_count):
     text = detokenize(content)
     capitalize_next = False
     
+    stop_words = ['.', '?', '!']
+    
     for text_char in text:
         if (text_char == ' ' and capitalize_next):
             # Space was replaced with line break
             continue
             
-        if (text_char == '.'):
+        if (text_char in stop_words):
             print (text_char)
             capitalize_next = True
         else:
