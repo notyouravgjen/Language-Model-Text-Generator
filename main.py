@@ -4,6 +4,7 @@
 @author: notyouravgjen
 """
 
+import os
 import sys
 import nltk
 import re
@@ -33,7 +34,7 @@ def tokenize_lower(string_list):
     return tokenlist
     
 # use a language model to generate text
-def generate_text(tokenized_text):
+def generate_text(tokenized_text, word_count):
     n = 3
     train_data, padded_sents = padded_everygram_pipeline(n, tokenized_text)
     model = MLE(n)
@@ -42,7 +43,7 @@ def generate_text(tokenized_text):
     seed = random.randint(0,10)    
     detokenize = TreebankWordDetokenizer().detokenize
     content = []
-    for token in model.generate(3000, random_seed=seed):
+    for token in model.generate(word_count, random_seed=seed):
         if token == '<s>':
             continue
         if token == '</s>':
@@ -65,14 +66,14 @@ def create_vocab_and_training_data(ngram_order, words, tokens2d):
         ],
     )
             
-def la_place_generate(tokenized_text, tokens2d):
+def la_place_generate(tokenized_text, tokens2d, word_count):
     vocab, training_text = create_vocab_and_training_data(2, tokenized_text, tokens2d)
     model = Laplace(2, vocabulary=vocab)
     model.fit(training_text)
     
     detokenize = TreebankWordDetokenizer().detokenize
     content = []
-    for token in model.generate(3000):
+    for token in model.generate(word_count):
         if token == '<UNK>':
             continue
         content.append(token)
@@ -94,47 +95,34 @@ def main(argv):
     r_tokens = reuters.words()
     r_train = r_tokens[:1000]
     
-    #Open training data    
-    f1 = open('data/ep1.trn', 'r')
-    f2 = open('data/ep2.trn', 'r')
-    f3 = open('data/ep3.trn', 'r')
-    f4 = open('data/ep4.trn', 'r')
-    f5 = open('data/ep5.trn', 'r')
-    f6 = open('data/ep6.trn', 'r')
-    
-    text1 = f1.read()
-    text2 = f2.read()
-    text3 = f3.read()
-    text4 = f4.read()
-    text5 = f5.read()
-    text6 = f6.read()
-    
-    tokens1 = tokenize_lower([text1])
-    tokens2 = tokenize_lower([text2])
-    tokens3 = tokenize_lower([text3])
-    tokens4 = tokenize_lower([text4])
-    tokens5 = tokenize_lower([text5])
-    tokens6 = tokenize_lower([text6])
-    
-    # 2d list of all tokens
-    tokens_2d = [tokens1, tokens2, tokens3, tokens4, tokens5, tokens6]
+    #Open training data
+    files = os.listdir('data')
     
     # 1d list of all tokens
-    tokens = []
-    tokens.extend(tokens1)
-    tokens.extend(tokens2)
-    tokens.extend(tokens3)
-    tokens.extend(tokens4)
-    tokens.extend(tokens5)
-    tokens.extend(tokens6)
+    tokens_1d = []
     
+    # 2d list of all tokens
+    tokens_2d = []
+    
+    total_word_count = 0
+    
+    for file_name in files:
+        file = open('data/'+file_name, 'r')
+        text = file.read()
+        tokens = tokenize_lower([text])
+        tokens_1d.extend(tokens)
+        tokens_2d.append(tokens)
+        total_word_count += len(tokens)
+ 
+    avg_word_count = int(total_word_count / len(files))
+ 
     # Use MLE
-    #generate_text(tokens_2d)
+    #generate_text(tokens_2d, avg_word_count)
     
     # Use LaPlace
     tokens.extend(b_train)
     tokens.extend(r_train)
-    la_place_generate(tokens, tokens_2d)
+    la_place_generate(tokens_1d, tokens_2d, avg_word_count)
     
 if __name__ == "__main__":
     main(sys.argv[1:])
